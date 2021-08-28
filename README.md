@@ -15,4 +15,13 @@ https://docs.expo.io/tutorial/planning/
 - eslint
 - prettier
 
+## 動かし方
+
+```
+npm install
+npm start
+
+localサーバーが立ち上がるのでスマホのQRコードで読む 
+```
+
 
