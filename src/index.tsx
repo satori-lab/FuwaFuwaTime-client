@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Style } from "./style";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, Button } from "react-native";
 import { Audio } from "expo-av";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
 import { useStopwatch, useTimer } from "react-timer-hook";
-import { catImages, catShowIndexRange } from "./const";
+import { catImages, catShowIndexRange, recordingOptions } from "./const";
 import Select from "./select";
 import { SelectModal } from "./modal";
 
@@ -22,6 +22,11 @@ export default function App() {
   const [showCat, setShowCat] = React.useState<undefined | number>(undefined);
   const [showDuration, setShowDuration] = React.useState(0);
   const [controlId, setControlId] = React.useState("");
+  const [hasRecodingPermission, setRecodingPermission] =  React.useState<null | boolean>(
+    null
+  );
+  const [recording, setRecording] = React.useState<Audio.Recording | undefined>(undefined);
+  const [debugUriText, setDebugUriText] = React.useState("");
 
   const onFacesDetected = () => {
     reset();
@@ -29,10 +34,51 @@ export default function App() {
 
   const isCatAppearance = (): boolean => seconds > 3;
 
+  const startRecording = async (): Promise<void> => {
+    if (!hasRecodingPermission) {
+      return;
+    }
+    try {
+      console.log('Requesting permissions..');
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+        playThroughEarpieceAndroid: true,
+      }); 
+      console.log('Starting recording..');
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(recordingOptions);
+      await recording.startAsync();
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  const stopRecording = async (): Promise<void> => {
+    if (!hasPermission) {
+      return;
+    }
+    if (recording !== undefined) {
+      console.log('Stopping recording..');
+      setRecording(undefined);
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI(); 
+      console.log('Recording stopped and stored at', uri);
+      setDebugUriText(uri ? uri : "");
+    }
+  }
+
   React.useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === "granted");
+      const cameraPermission = await Camera.requestPermissionsAsync();
+      setHasPermission(cameraPermission.status === "granted");
+      const recodingPermission = await Audio.requestPermissionsAsync();
+      setRecodingPermission(recodingPermission.status === "granted");
       const soundSetUp = new Audio.Sound();
       await soundSetUp.loadAsync(require("../assets/cat.mp3"));
       setSound(soundSetUp);
@@ -111,6 +157,11 @@ export default function App() {
         {modalVisible ? <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} /> : null}
         {/* <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} /> */}
       </TouchableOpacity >
+      <Button
+        title={recording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recording ? stopRecording : startRecording}
+      />
+      <Text>{debugUriText}</Text>
     </Camera >
   );
 }
