@@ -24,7 +24,7 @@ export const SelectModal = (props: IProps): React.ReactElement => {
 		<Modal
 			isVisible={props.modalVisible}
 		>
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#fff" }}>
+			<View style={{ height: 200, justifyContent: 'center', alignItems: 'center', backgroundColor: "#fff" }}>
 				<Button
 					title="猫"
 					onPress={() => {
@@ -35,13 +35,13 @@ export const SelectModal = (props: IProps): React.ReactElement => {
 				<Button
 					title="犬"
 					onPress={() => {
-						Alert.alert("dog")
 						props.setAnimalType(animals.dog)
 						closeModal()
 					}}
 				/>
 				<Button
-					title="Close modal"
+					title="キャンセル"
+					color="#ff0000"
 					onPress={closeModal}
 				/>
 			</View>

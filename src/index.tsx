@@ -5,11 +5,9 @@ import { Audio } from "expo-av";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
 import { useStopwatch, useTimer } from "react-timer-hook";
-import { images, showIndexRanges, animals } from "./const";
+import { images, showIndexRanges, animals, voices } from "./const";
 import Select from "./select";
 import { SelectModal } from "./modal";
-const cat_01 = require("../assets/cat_1.gif")
-const catmp3 = require("../assets/cat.mp3")
 
 export default function App() {
   const camera = React.useRef<Camera>(null);
@@ -37,7 +35,7 @@ export default function App() {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === "granted");
       const soundSetUp = new Audio.Sound();
-      await soundSetUp.loadAsync(catmp3);
+      await soundSetUp.loadAsync(voices.cat);
       setSound(soundSetUp);
       setInterval(() => {
         const updateControlId = "controlId" + Math.random();
@@ -71,6 +69,9 @@ export default function App() {
         const soundStatus = await sound.getStatusAsync();
         if (soundStatus.isLoaded && !soundStatus.isPlaying && firstCrying) {
           try {
+            const soundSetUp = new Audio.Sound();
+            await soundSetUp.loadAsync(voices[animalType]);
+            setSound(soundSetUp);
             setFirstCrying(false);
             sound.replayAsync();
           } catch (error) {
@@ -108,7 +109,6 @@ export default function App() {
       }}>
         {showAnimal !== undefined && <Image source={images[animalType][showAnimal]?.resource} style={styles.image} />}
 
-        {/* {isCatAppearance() && <Image source={cat_01} style={styles.image} />} */}
         {tap ? <Select setModalVisible={setModalVisible} /> : null}
         {modalVisible ? <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setAnimalType={setAnimalType} /> : null}
       </TouchableOpacity >
