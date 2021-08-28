@@ -97,10 +97,6 @@ export default function App() {
       ref={camera}
     >
       {showCat !== undefined && <Image source={catImages[showCat].resource} style={styles.image} />}
-      <Text>{showCat === undefined ? "not cat" : showCat}</Text>
-      <Text>{"seconds: " + seconds}</Text>
-      <Text>{"showDuration: " + showDuration}</Text>
-      <Text>{"controlId: " + controlId}</Text>
     </Camera>
   );
 }
