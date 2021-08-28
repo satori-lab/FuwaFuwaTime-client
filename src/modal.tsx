@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { animals } from './const';
 import {
 	// StyleSheet,
 	View,
@@ -12,6 +13,7 @@ import Modal from "react-native-modal";
 interface IProps {
 	modalVisible: any,
 	setModalVisible: any,
+	setAnimalType: any,
 }
 
 export const SelectModal = (props: IProps): React.ReactElement => {
@@ -25,11 +27,18 @@ export const SelectModal = (props: IProps): React.ReactElement => {
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#fff" }}>
 				<Button
 					title="猫"
-					onPress={() => { closeModal() }}
+					onPress={() => {
+						props.setAnimalType(animals.cat)
+						closeModal()
+					}}
 				/>
 				<Button
 					title="犬"
-					onPress={() => { closeModal() }}
+					onPress={() => {
+						Alert.alert("dog")
+						props.setAnimalType(animals.dog)
+						closeModal()
+					}}
 				/>
 				<Button
 					title="Close modal"
