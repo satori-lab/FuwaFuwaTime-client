@@ -78,14 +78,11 @@ export default function App() {
         const info = await FileSystem.getInfoAsync(dataUri);
         console.log(`FILE INFO: ${JSON.stringify(info)}`);
         const uri = info.uri;
+        const audioResponse = await fetch(uri);
+        const blob = await audioResponse.blob();
         const formData = new FormData();
-        formData.append('file', {
-          uri,
-          type: 'audio/x-wav',
-          // could be anything 
-          name: 'speech2text'
-        });
-        const response = await fetch(config.CLOUD_FUNCTION_URL, {
+        formData.append('file', blob);
+        const response = await fetch("https://spajam-2021-cat-4pfxmlqsaa-an.a.run.app", {
           method: 'POST',
           body: formData
         });
