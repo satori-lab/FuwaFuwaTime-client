@@ -4,11 +4,13 @@ import { Text, View, StyleSheet, Button, Image } from "react-native";
 import { Video, AVPlaybackStatus } from "expo-av";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
+import { useStopwatch, useTimer } from "react-timer-hook";
 
 export default function App() {
   const video = React.useRef(null);
   const camera = React.useRef<Camera>(null);
   const [status, setStatus] = React.useState({});
+  const { seconds, reset } = useStopwatch({ autoStart: true });
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(
     null
   );
@@ -17,7 +19,7 @@ export default function App() {
   );
 
   const onFacesDetected = () => {
-    console.log("detected");
+    reset();
   };
 
   React.useEffect(() => {
@@ -34,6 +36,7 @@ export default function App() {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
   return (
     <Camera
       onFacesDetected={onFacesDetected}
@@ -48,7 +51,7 @@ export default function App() {
       type={Camera.Constants.Type.front}
       ref={camera}
     >
-      <Image source={require("../assets/cat_motion_1.gif")} />
+      {seconds > 3 && <Image source={require("../assets/cat_motion_1.gif")} />}
     </Camera>
   );
 }
