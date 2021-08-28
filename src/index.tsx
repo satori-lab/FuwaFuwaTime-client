@@ -1,17 +1,21 @@
 import * as React from "react";
 import { Style } from "./style";
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import { Audio } from "expo-av";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
 import { useStopwatch, useTimer } from "react-timer-hook";
 import { catImages, catShowIndexRange } from "./const";
+import Select from "./select";
+import { SelectModal } from "./modal";
 
 export default function App() {
   const camera = React.useRef<Camera>(null);
   const [sound, setSound] = React.useState<Audio.Sound | undefined>(undefined);
   const { seconds, reset } = useStopwatch({ autoStart: true });
   const [firstCrying, setFirstCrying] = React.useState(true);
+  const [tap, setTapped] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(
     null
   );
@@ -43,11 +47,11 @@ export default function App() {
     (async () => {
       if (showCat !== undefined) {
         const updateDuration = showDuration + 1;
-          setShowDuration(updateDuration);
-          if (updateDuration > catImages[showCat].duration) {
-            setShowCat(undefined);
-            setShowDuration(0);
-          }
+        setShowDuration(updateDuration);
+        if (updateDuration > catImages[showCat].duration) {
+          setShowCat(undefined);
+          setShowDuration(0);
+        }
       }
     })();
   }, [controlId]);
@@ -64,11 +68,11 @@ export default function App() {
         const soundStatus = await sound.getStatusAsync();
         if (soundStatus.isLoaded && !soundStatus.isPlaying && firstCrying) {
           try {
-              setFirstCrying(false);
-              sound.replayAsync();
-            } catch (error) {
-              console.log(error);
-            }
+            setFirstCrying(false);
+            sound.replayAsync();
+          } catch (error) {
+            console.log(error);
+          }
         }
       })();
     }
@@ -83,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <Camera
+    < Camera
       onFacesDetected={onFacesDetected}
       faceDetectorSettings={{
         mode: FaceDetector.Constants.Mode.fast,
@@ -97,7 +101,17 @@ export default function App() {
       ref={camera}
     >
       {showCat !== undefined && <Image source={catImages[showCat].resource} style={styles.image} />}
-    </Camera>
+      < TouchableOpacity onPress={() => {
+        setTapped(!tap)
+      }}>
+
+        {isCatAppearance() && <Image source={require("../assets/cat_1.gif")} style={styles.image} />}
+        {tap ? <Select setModalVisible={setModalVisible} /> : null}
+        {/* {modalVisible ? <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} /> : null} */}
+        {modalVisible ? <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} /> : null}
+        {/* <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} /> */}
+      </TouchableOpacity >
+    </Camera >
   );
 }
 
