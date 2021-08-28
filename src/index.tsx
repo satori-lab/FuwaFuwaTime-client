@@ -26,7 +26,7 @@ export default function App() {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === "granted");
       const soundSetUp = new Audio.Sound();
-          await soundSetUp.loadAsync(require("../assets/cat1b.mp3"));
+          await soundSetUp.loadAsync(require("../assets/cat.mp3"));
           setSound(soundSetUp);
     })();
   }, []);
@@ -72,7 +72,7 @@ export default function App() {
       type={Camera.Constants.Type.front}
       ref={camera}
     >
-      {isCatAppearance() && <Image source={require("../assets/cat_1.gif")} />}
+      {isCatAppearance() && <Image source={require("../assets/cat_1.gif")} style={styles.image} />}
     </Camera>
   );
 }
@@ -92,4 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  image: {
+    bottom: -50,
+  }
 });
