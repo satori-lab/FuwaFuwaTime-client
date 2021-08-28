@@ -45,7 +45,7 @@ export default function App() {
         tracking: true,
       }}
       style={Style.camera}
-      type={Camera.Constants.Type.back}
+      type={Camera.Constants.Type.front}
       ref={camera}
     >
       <Image source={require("../assets/cat_motion_1.gif")} />
