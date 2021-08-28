@@ -6,11 +6,11 @@ interface ImageResource {
 export const catImages: ImageResource[] = [
   {
     resource: require("../assets/cat_1.gif"),
-    duration: 10
+    duration: 15
   },
   {
     resource: require("../assets/cat_2.gif"),
-    duration: 10
+    duration: 20
   },
   {
     resource: require("../assets/cat_3.gif"),

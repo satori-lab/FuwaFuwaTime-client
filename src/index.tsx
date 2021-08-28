@@ -16,6 +16,8 @@ export default function App() {
     null
   );
   const [showCat, setShowCat] = React.useState<undefined | number>(undefined);
+  const [showDuration, setShowDuration] = React.useState(0);
+  const [controlId, setControlId] = React.useState("");
 
   const onFacesDetected = () => {
     reset();
@@ -28,10 +30,27 @@ export default function App() {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === "granted");
       const soundSetUp = new Audio.Sound();
-          await soundSetUp.loadAsync(require("../assets/cat.mp3"));
-          setSound(soundSetUp);
+      await soundSetUp.loadAsync(require("../assets/cat.mp3"));
+      setSound(soundSetUp);
+      setInterval(() => {
+        const updateControlId = "controlId" + Math.random();
+        setControlId(updateControlId);
+      }, 1000);
     })();
   }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      if (showCat !== undefined) {
+        const updateDuration = showDuration + 1;
+          setShowDuration(updateDuration);
+          if (updateDuration > catImages[showCat].duration) {
+            setShowCat(undefined);
+            setShowDuration(0);
+          }
+      }
+    })();
+  }, [controlId]);
 
   React.useEffect(() => {
     if (!isCatAppearance() && !firstCrying) {
@@ -78,6 +97,10 @@ export default function App() {
       ref={camera}
     >
       {showCat !== undefined && <Image source={catImages[showCat].resource} style={styles.image} />}
+      <Text>{showCat === undefined ? "not cat" : showCat}</Text>
+      <Text>{"seconds: " + seconds}</Text>
+      <Text>{"showDuration: " + showDuration}</Text>
+      <Text>{"controlId: " + controlId}</Text>
     </Camera>
   );
 }
