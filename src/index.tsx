@@ -5,6 +5,7 @@ import { Audio } from "expo-av";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
 import { useStopwatch, useTimer } from "react-timer-hook";
+import { catImages, catShowIndexRange } from "./const";
 
 export default function App() {
   const camera = React.useRef<Camera>(null);
@@ -14,6 +15,9 @@ export default function App() {
   const [hasPermission, setHasPermission] = React.useState<null | boolean>(
     null
   );
+  const [showCat, setShowCat] = React.useState<undefined | number>(undefined);
+  const [showDuration, setShowDuration] = React.useState(0);
+  const [controlId, setControlId] = React.useState("");
 
   const onFacesDetected = () => {
     reset();
@@ -26,14 +30,34 @@ export default function App() {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === "granted");
       const soundSetUp = new Audio.Sound();
-          await soundSetUp.loadAsync(require("../assets/cat.mp3"));
-          setSound(soundSetUp);
+      await soundSetUp.loadAsync(require("../assets/cat.mp3"));
+      setSound(soundSetUp);
+      setInterval(() => {
+        const updateControlId = "controlId" + Math.random();
+        setControlId(updateControlId);
+      }, 1000);
     })();
   }, []);
 
   React.useEffect(() => {
+    (async () => {
+      if (showCat !== undefined) {
+        const updateDuration = showDuration + 1;
+          setShowDuration(updateDuration);
+          if (updateDuration > catImages[showCat].duration) {
+            setShowCat(undefined);
+            setShowDuration(0);
+          }
+      }
+    })();
+  }, [controlId]);
+
+  React.useEffect(() => {
     if (!isCatAppearance() && !firstCrying) {
       setFirstCrying(true);
+    }
+    if (isCatAppearance() && showCat === undefined) {
+      setShowCat(Math.floor(Math.random() * (catShowIndexRange.max + 1 - catShowIndexRange.min)) + catShowIndexRange.min);
     }
     if (sound !== undefined && isCatAppearance()) {
       (async () => {
@@ -72,7 +96,7 @@ export default function App() {
       type={Camera.Constants.Type.front}
       ref={camera}
     >
-      {isCatAppearance() && <Image source={require("../assets/cat_1.gif")} style={styles.image} />}
+      {showCat !== undefined && <Image source={catImages[showCat].resource} style={styles.image} />}
     </Camera>
   );
 }
