@@ -1,13 +1,6 @@
-import React, { Component, ReactElement } from 'react';
-import { Text, View, StyleSheet, Button, Alert } from 'react-native';
-// import { Constants } from 'expo';
-
-// You can import from local files
-// import AssetExample from './components/AssetExample';
-
-// or any pure javascript modules available in npm
-// import { Card } from 'react-native-elements'; // 0.18.5
-
+import React, { Component } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
+import { Icon } from "react-native-elements"
 
 interface IProps {
 	setModalVisible: any,
@@ -24,9 +17,16 @@ export default class Select extends Component<IProps> {
 		return (
 			// <View style={styles.container}>
 			<View >
-				<Button
-					title="Press me"
-					color="#f194ff"
+				<Icon
+					name='user'
+					type='evilicon'
+					color='#517fa4'
+					// reverse
+					// raised
+					size={50}
+					// background="#ffffff"
+					// title="Press me"
+					// color="#f194ff"
 					onPress={this._handleButtonPress}
 				/>
 			</View >
