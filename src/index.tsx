@@ -8,6 +8,7 @@ import { useStopwatch, useTimer } from "react-timer-hook";
 import { catImages, catShowIndexRange, recordingOptions } from "./const";
 import Select from "./select";
 import { SelectModal } from "./modal";
+import * as FileSystem from 'expo-file-system';
 
 export default function App() {
   const camera = React.useRef<Camera>(null);
@@ -67,9 +68,32 @@ export default function App() {
       console.log('Stopping recording..');
       setRecording(undefined);
       await recording.stopAndUnloadAsync();
-      const uri = recording.getURI(); 
-      console.log('Recording stopped and stored at', uri);
-      setDebugUriText(uri ? uri : "");
+      const dataUri = recording.getURI(); 
+      console.log('Recording stopped and stored at', dataUri);
+      setDebugUriText(dataUri ? dataUri : "");
+      if (dataUri === null) {
+        return;
+      }
+      try {
+        const info = await FileSystem.getInfoAsync(dataUri);
+        console.log(`FILE INFO: ${JSON.stringify(info)}`);
+        const uri = info.uri;
+        const formData = new FormData();
+        formData.append('file', {
+          uri,
+          type: 'audio/x-wav',
+          // could be anything 
+          name: 'speech2text'
+        });
+        const response = await fetch(config.CLOUD_FUNCTION_URL, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        setDebugUriText(JSON.stringify(data));
+      } catch(error) {
+        console.log('There was an error', error);
+      }
     }
   }
 
