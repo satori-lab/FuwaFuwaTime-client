@@ -1,3 +1,5 @@
+import { AVPlaybackSource } from "expo-av/build/AV";
+
 interface ImageResource {
   resource: any;
   duration: number;
@@ -9,6 +11,11 @@ export const animals = {
   'cat': 'cat',
   'dog': 'dog',
 }
+
+export const voices: { [key: string]: AVPlaybackSource } = {
+  'cat': require("../assets/cat.mp3"),
+  'dog': require("../assets/dog_voice.mp3")
+};
 
 export const images: { [key: string]: ImageResource[] } = {
   'cat': [
