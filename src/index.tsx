@@ -80,7 +80,9 @@ export default function App() {
         const uri = info.uri;
         const audioResponse = await fetch(uri);
         const formData = new FormData();
+        // 本来であればBlobをアップロードすべきなのだが, uriを指定しないとなぜか動かないのでts-ignoreで実装する
         formData.append('file', {
+          // @ts-ignore
           uri: audioResponse.url,
           type: 'audio/x-wav',
           // could be anything 
