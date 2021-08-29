@@ -10,6 +10,11 @@ import Select from "./select";
 import { SelectModal } from "./modal";
 import * as FileSystem from 'expo-file-system';
 
+interface TextAnalysis {
+  label: string;
+  score: number;
+}
+
 export default function App() {
   const camera = React.useRef<Camera>(null);
   const [sound, setSound] = React.useState<Audio.Sound | undefined>(undefined);
@@ -28,12 +33,13 @@ export default function App() {
   );
   const [recording, setRecording] = React.useState<Audio.Recording | undefined>(undefined);
   const [debugUriText, setDebugUriText] = React.useState("");
+  const [isNegativeWord, setNegativeWord] = React.useState(false);
 
   const onFacesDetected = () => {
     reset();
   };
 
-  const isCatAppearance = (): boolean => seconds > 3;
+  const isCatAppearance = (): boolean => seconds > 3 || isNegativeWord;
 
   const startRecording = async (): Promise<void> => {
     if (!hasRecodingPermission) {
@@ -92,7 +98,10 @@ export default function App() {
           method: 'POST',
           body: formData
         });
-        const data = await response.json();
+        const data: TextAnalysis = await response.json();
+        if (data.label === "ネガティブ" && data.score > 0.5) {
+          setNegativeWord(true);
+        }
         setDebugUriText(JSON.stringify(data));
       } catch(error) {
         console.log('There was an error', error);
@@ -138,6 +147,7 @@ export default function App() {
     }
     if (sound !== undefined && isCatAppearance()) {
       (async () => {
+        setNegativeWord(false);
         const soundStatus = await sound.getStatusAsync();
         if (soundStatus.isLoaded && !soundStatus.isPlaying && firstCrying) {
           try {
@@ -149,7 +159,7 @@ export default function App() {
         }
       })();
     }
-  }, [seconds]);
+  }, [seconds, isNegativeWord]);
 
   if (hasPermission === null) {
     return <View />;
@@ -188,7 +198,7 @@ export default function App() {
         title={recording ? 'Stop Recording' : 'Start Recording'}
         onPress={recording ? stopRecording : startRecording}
       />
-      <Text>{debugUriText}</Text>
+      <Text style={styles.debugText}>{debugUriText}</Text>
     </Camera >
   );
 }
@@ -210,5 +220,9 @@ const styles = StyleSheet.create({
   },
   image: {
     bottom: -50,
+  },
+  debugText: {
+    color: '#00ff00',
+    fontSize: 20,
   }
 });
