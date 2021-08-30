@@ -1,19 +1,13 @@
-# ReactNativeのtutorialを自分なりにディレクトリをカスタマイズする
+# FuwaFuwaTime
 
-## チュートリアル
+画面から顔をそむけたりするなど, 顔が検知できなくなったら猫が出てくるアプリです
 
-https://docs.expo.io/tutorial/planning/
+![image](./doc/image/image1.png)
+![image2](./doc/image/image2.png)
 
-## 方針
+## 紹介スライド
 
-- まず大きな要素(チュートリアルで言えば写真アップロード機能)単位でディレクトリを作る
-- 要素の中ではパーツ単位でディレクトリを作る
-
-## 入れたもの
-
-- typescript
-- eslint
-- prettier
+[スライド](./slide/cat-camera.pdf)
 
 ## 動かし方
 
