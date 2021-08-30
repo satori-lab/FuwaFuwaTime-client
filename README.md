@@ -7,7 +7,7 @@
 
 ## 紹介スライド
 
-[スライド](./slide/cat-camera.pdf)
+[スライド](./doc/slide/cat-camera.pdf)
 
 ## 動かし方
 
